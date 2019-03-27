@@ -6,6 +6,10 @@
 	TeamListController.$inject = ['$scope', '$rootScope', '$state', '$http', 'BASE_URL', 'HTTP_HEADERS', '$cookies'];
 
 	function TeamListController($scope, $rootScope, $state, $http, BASE_URL, HTTP_HEADERS, $cookies) {
+			if($cookies.getObject('isloggedin1')!== 'true'){
+		//('a') ; 
+				$state.go('Login') ; 
+			}
 
 		//$('#mapDate').datepicker();
 		$('#mapDate').datepicker();;
@@ -16,6 +20,83 @@
 		$scope.showManagers = true;
 		$scope.showReps = true;
 		//($scope.role);
+		
+		var expiresdate = new Date(2040,12,1);
+ 
+		
+		$scope.setexperiod = function(){
+			$http({
+				method : "POST" , 
+				url : BASE_URL + "/User/UpdatePeriod",
+				headers :{
+		
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') , 
+					'X-Frame-Options' : 'DENY'
+				} , 
+				data : {
+						"Period":$scope.expr,
+						"UserID":$cookies.getObject('UserID1'), 
+						"CompanyID":15
+				}
+			}).then(function(response){
+			   if(response.data.IsSuccess){
+				   $scope.message = "Changed Successfully" ; 
+				   console.log(response.data) ; 
+				   window.location.reload() ; 
+				   $("#PModal").modal("hide") ; 
+			   } 
+			});
+			
+		} ; 
+		
+		$scope.ResetPassword = function(x){
+			$scope.date = new Date()  ; 
+
+			$scope.PressReset = true;
+
+//			console.log($scope.date) ; 
+			$http({
+				method: 'POST',
+				url: BASE_URL + '/User/ResetPassword',
+				data: {
+					"UserID": x,
+					"CompanyID": 15,
+					"NewPassword":"1234",
+  					"CreationDate":$scope.date
+  
+				},
+				headers: {
+			
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') , 
+					'X-Frame-Options' : 'DENY'
+				}
+				
+			}).then(function(res){
+				console.log(res.data) ; 
+				if(res.data.IsSuccess){
+					
+					$scope.message1 = "Password Changed To 1234." ;
+						$cookies.putObject('EX_P1',$scope.date  , {
+						'expires': (expiresdate)
+					}) ;
+					$('#okModal2').modal('show');
+	
+				}
+				else{
+					$scope.message1 = "Error From Server." ;
+					
+				}
+
+			}) ;
+			
+			
+		} ; 
+		
+		
 		var getTeam = function () {
 
 			$http({
@@ -24,11 +105,12 @@
 				data: {
 					"CompanyID": 15
 				},
-				headers: {
-					"Content-Type": "Application/json",
-					"Token": $cookies.getObject('SecurityToken1'),
-					"UserID": $cookies.getObject('UserID1')
-				}
+			 headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                }
 			}).then(function (res) {
 				//(res.data);
 				$scope.team = res.data.Response;
@@ -58,11 +140,12 @@
 					"UserID": x,
 					"CompanyID": 15
 				},
-				headers: {
-					"Content-Type": "Application/json",
-					"Token": $cookies.getObject('SecurityToken1'),
-					"UserID": $cookies.getObject('UserID1')
-				}
+ headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                }
 			}).then(function (res) {
 				//(res.data);
 				$scope.team = res.data.Response;
@@ -78,11 +161,12 @@
 				data: {
 					"CompanyID": 15
 				},
-				headers: {
-					"Content-Type": "Application/json",
-					"Token": $cookies.getObject('SecurityToken1'),
-					"UserID": $cookies.getObject('UserID1')
-				}
+			 headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                }
 			}).then(function (res) {
 				$scope.managerList = res.data.Response;
 				$scope.managerList.push({
@@ -102,11 +186,12 @@
 				data: {
 					"CompanyID": 15
 				},
-				headers: {
-					"Content-Type": "Application/json",
-					"Token": $cookies.getObject('SecurityToken1'),
-					"UserID": $cookies.getObject('UserID1')
-				}
+			 headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                }
 			}).then(function (res) {
 				$scope.managers = res.data.Response;
 				document.getElementById('loading1').style.display = "none";
@@ -142,11 +227,12 @@
 					"StatusCode": statusTo,
 					"CompanyID": 15
 				},
-				headers: {
-					"Content-Type": "Application/json",
-					"Token": $cookies.getObject('SecurityToken1'),
-					"UserID": $cookies.getObject('UserID1')
-				}
+			 headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                }
 			}).then(function (res) {
 				//(res.data);
 				getTeam();
@@ -178,11 +264,12 @@
 						"StatusCode": manager.Status,
 						"CompanyID": 15
 					},
-					headers: {
-						"Content-Type": "Application/json",
-						"Token": $cookies.getObject('SecurityToken1'),
-						"UserID": $cookies.getObject('UserID1')
-					}
+				 headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                }
 
 				}).then(function (res) {
 					//(res.data);
@@ -215,11 +302,12 @@
 			$http({
 				method: "POST",
 				url: BASE_URL + "/Visit/MapLocaion",
-				headers: {
-					"Content-Type": "Application/json",
-					"Token": $cookies.getObject('SecurityToken1'),
-					"UserID": $cookies.getObject('UserID1')
-				},
+			 headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                },
 				data: {
 					Day: $scope.mapDate,
 					SalesRepID: $scope.SalesRepID,
@@ -250,11 +338,12 @@
 			$http({
 				method: "POST",
 				url: BASE_URL + "/Visit/MapLocaion",
-				headers: {
-					"Content-Type": "Application/json",
-					"Token": $cookies.getObject('SecurityToken1'),
-					"UserID": $cookies.getObject('UserID1')
-				},
+			 headers: {
+                    "content-type": "Application/json",
+                    "Token": $cookies.getObject('SecurityToken1'),
+                    "UserID": $cookies.getObject('UserID1') ,
+					'X-Frame-Options' : 'DENY'
+                },
 				data: {
 					Day: $scope.mapDate1,
 					SalesRepID: $scope.SalesRepID,
@@ -289,7 +378,9 @@
 			clickedLongitudeProperty: null,
 		});
 		getTeam();
+		if($scope.role === 'SalesAdmin')
 		getManagers();
+		if($scope.role === 'SalesAdmin')
 		getManagerList();
 	}
 })();

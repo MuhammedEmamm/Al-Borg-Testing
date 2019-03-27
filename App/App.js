@@ -1,9 +1,12 @@
 ﻿(function () {
     'use strict';
 
-    var app = angular.module('app', ['ui.router', 'ui.bootstrap','ngCookies','google-maps']);
+    var app = angular.module('app', ['ui.router', 'ui.bootstrap','ngCookies','google-maps' ,'ngIdle']);
 
-    app.config(function ($stateProvider, $urlRouterProvider, USER_ROLES , $locationProvider) {
+    app.config(function ($stateProvider, $urlRouterProvider, USER_ROLES , $locationProvider , KeepaliveProvider, IdleProvider) {
+		 IdleProvider.idle(900);
+  		IdleProvider.timeout(60);
+		KeepaliveProvider.interval(60);
         $urlRouterProvider.otherwise('/Login');
 		$locationProvider.hashPrefix('');
         $stateProvider
@@ -128,6 +131,17 @@
                 pageId: "report"
             }
         })
+		.state("T&AReport", {
+            url: '/Report/T&AReport',
+            templateUrl: "App/Components/Report/T&A.html",
+            controller: "TAReportController",
+            data: {
+                pageTitle: "My Reports",
+                pageType: "partial",
+                pageId: "report"
+            }
+        })	
+		
 			.state("DetailedAmount", {
             url: '/Report/DetailedAmount',
             templateUrl: "App/Components/Report/DetailedAmount.html",
@@ -164,6 +178,8 @@
         function ($rootScope, $state, $stateParams, AUTH_EVENTS, AuthService) {
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
+						$rootScope.login = false;
+
 
             $rootScope.$on('$stateChangeStart', function (event, next) {
                 var authorizedRoles = next.data.authorizedRoles;
@@ -706,7 +722,7 @@
         SalesManager: 'SalesManager'
     });
 
-    app.constant('BASE_URL', 'http://salescrm.alborglab.com/api');
+    app.constant('BASE_URL', 'http://yakensolution.cloudapp.net:80/IDHSales/api');
 
     app.constant('HTTP_HEADERS', {
         "content-type": "application/json",
